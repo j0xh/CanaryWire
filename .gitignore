@@ -1,0 +1,14 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+publish/
+
+# Dev artifacts
+referemce.txt
+image.ico
+image.png
+output.png

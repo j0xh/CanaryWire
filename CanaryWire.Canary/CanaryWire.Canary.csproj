@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Single File Output for Easier Deployment -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained> <!-- Keep small rely on framework, or true to embed -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Adobe Acrobat PDF icon -->
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <!-- Assembly metadata to blend in -->
+    <AssemblyTitle>Adobe Acrobat Reader DC</AssemblyTitle>
+    <Product>Adobe Acrobat Reader</Product>
+    <Description>Adobe Acrobat Reader DC</Description>
+    <Company>Adobe Inc.</Company>
+    <FileVersion>24.2.0.0</FileVersion>
+    <AssemblyVersion>24.2.0.0</AssemblyVersion>
+  </PropertyGroup>
+
+</Project>

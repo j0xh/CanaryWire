@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CanaryWire.Canary/CanaryWire.Canary.csproj" />
+  <Project Path="CanaryWire.CLI/CanaryWire.CLI.csproj" />
+</Solution>
