@@ -94,7 +94,7 @@ The release zip contains everything you need:
 ### Option B: Build from Source
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/CanaryWire.git
+git clone https://github.com/j0xh/CanaryWire.git
 cd CanaryWire
 dotnet publish CanaryWire.Canary -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
 dotnet run --project CanaryWire.CLI
