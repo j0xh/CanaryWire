@@ -1,95 +1,112 @@
 # CanaryWire
 
-Honeytoken file deployer and intrusion monitor for Windows.
+Canary (honeytoken) file deployment and access monitoring tool for Windows.
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)
 ![Windows](https://img.shields.io/badge/platform-Windows_Only-blue.svg)
 
 <p align="center">
-  <img src="output.png" alt="CanaryWire Webhook Alert" width="300">
+  <img src="output.png" alt="CanaryWire Alert Example" width="300">
 </p>
 
-CanaryWire creates disguised canary files that alert you via Discord the instant they are opened. It deploys a file that appears as a normal `.pdf` in Windows Explorer — complete with an Adobe Acrobat icon and no visible executable extension. When opened, the canary silently captures system intelligence, takes a screenshot, and sends a formatted embed alert to your Discord webhook.
+CanaryWire deploys decoy (“canary”) files into sensitive directories and generates an alert when they are accessed.  
+It is intended for detecting unauthorized browsing of protected folders such as finance, HR, or credential storage locations.
 
-> **Use only on systems you are authorized to test. Unauthorized deployment is illegal.**
+The deployed file appears as a normal `.pdf` in Windows Explorer to blend naturally into typical user environments.  
+When opened, CanaryWire records contextual system information and sends a structured alert to a configured Discord webhook.
+
+> **Use only on systems you own or are explicitly authorized to test. Unauthorized deployment is illegal.**
+
+---
 
 ## Key Features
 
-*   **Invisible Extension:** Uses the Windows Shortcut (`.lnk`) method. Windows never displays the `.lnk` extension — this is hardcoded in the OS shell and unaffected by "Show file extensions".
-*   **Adobe Acrobat Disguise:** Embedded icon, spoofed assembly metadata (Product, Company, Version). The canary looks and behaves like a real PDF.
-*   **Hidden Payload:** The executable is deployed with `Hidden + System` file attributes, invisible in default Explorer views.
-*   **Screenshot Capture:** Captures the primary screen at the moment of opening and attaches it to the Discord alert.
-*   **Accurate OS Detection:** Reads the Windows registry to report the correct edition and version (e.g. `Windows 11 Enterprise 24H2`), not the generic `NT 10.0.x` string.
-*   **Discord Embeds:** Alerts are sent as structured Discord embeds with inline fields and a red severity bar.
-*   **Stealth:** Fails silently on error. No console windows, no visible processes.
+* **Shortcut-Based Deployment:** Uses Windows Shortcut (`.lnk`) behavior, which is always hidden by the OS shell, ensuring the decoy file displays as a normal document.
+* **Document Appearance:** Uses an embedded Adobe Acrobat icon and assembly metadata so the decoy resembles a standard PDF file.
+* **Background Execution:** The monitoring component runs without disrupting the user experience.
+* **Screenshot Capture:** Captures the primary display at the moment of access to provide visual context.
+* **Accurate OS Detection:** Reads Windows registry values to report full OS edition and version (e.g. `Windows 11 Enterprise 24H2`).
+* **Structured Alerts:** Sends alerts as formatted Discord embeds with clear field layout and severity highlighting.
+* **Silent Error Handling:** Runs without visible UI or console windows.
+
+---
 
 ## How It Works
 
-Windows shortcuts (`.lnk`) have a unique property: the OS **never** displays their extension. Unlike every other file type, `.lnk` is exempt from the "Show file extensions" setting. This makes it the only reliable method for completely hiding a file's true nature.
+Windows shortcuts (`.lnk`) are treated uniquely by the operating system: their file extension is never shown, even when “Show file extensions” is enabled.  
+This allows the decoy file to appear as a standard document while launching a monitoring executable in the background.
 
-CanaryWire deploys three files to the target directory. Only the shortcut is visible:
+CanaryWire deploys three files into the chosen directory. Only the decoy file is visible:
 
 | File | Visible? | Purpose |
 |---|---|---|
-| `name.pdf` | Yes | `.lnk` shortcut with Adobe Acrobat icon |
-| `~$xxxxxxxx.exe` | No | The canary payload (Hidden + System) |
-| `~$xxxxxxxx.ico` | No | Adobe icon file (Hidden + System) |
+| `name.pdf` | Yes | `.lnk` shortcut styled as a PDF |
+| `~$xxxxxxxx.exe` | No | Monitoring component (Hidden + System) |
+| `~$xxxxxxxx.ico` | No | Icon resource (Hidden + System) |
 
-When the shortcut is opened:
+When the decoy file is opened:
 
-1. The hidden `.exe` launches silently
-2. Extracts the webhook URL from its own binary tail
-3. Captures a screenshot of the user's screen
-4. Gathers system intelligence (user, host, IPs, OS, file path)
-5. Sends a formatted Discord embed with the screenshot attached
-6. Displays a fake "Adobe Acrobat Reader" damaged-file error dialog
+1. The monitoring executable starts in the background  
+2. The webhook URL is extracted from the binary tail  
+3. A screenshot of the primary display is captured  
+4. System context is gathered (user, host, IPs, OS, file path)  
+5. A structured alert is sent to the Discord webhook  
+6. A standard “file error” dialog is shown to simulate a damaged document  
 
-## What It Captures
+---
+
+## Data Collected
 
 | Field | Description |
 |---|---|
 | User | Windows username |
 | Host | Machine hostname |
 | Domain | Domain or workgroup |
-| OS | Full edition, version, and build from registry |
+| OS | Full edition, version, and build (registry-based) |
 | CPU Cores | Processor count |
 | Public IP | External IP via `api.ipify.org` |
-| Local IP | All active local network addresses |
-| File Path | Full path the canary was executed from |
-| Screenshot | Primary monitor capture at time of opening |
-| Timestamp | UTC time of execution |
+| Local IP | Active local network addresses |
+| File Path | Path the decoy file was opened from |
+| Screenshot | Primary monitor capture at access time |
+| Timestamp | UTC time of access |
+
+---
 
 ## Prerequisites
 
 | Requirement | Details |
 |---|---|
 | Windows | 10 / 11 |
-| .NET 10 Desktop Runtime | [Download here](https://dotnet.microsoft.com/download/dotnet/10.0) — required for both the deployer and the canary payload |
+| .NET 10 Desktop Runtime | https://dotnet.microsoft.com/download/dotnet/10.0 |
 
-> Building from source requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) instead of just the runtime.
+> Building from source requires the .NET 10 SDK rather than only the runtime.
+
+---
 
 ## Quick Start
 
 ### Option A: Download Release
 
-1. Install the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/10.0) if you don't have it
-2. Download the latest `.zip` from [Releases](../../releases)
-3. Extract all files into the same folder
-4. Double-click `CanaryWire.CLI.exe`
+1. Install the .NET 10 Desktop Runtime if required  
+2. Download the latest `.zip` from Releases  
+3. Extract all files into the same directory  
+4. Run `CanaryWire.CLI.exe`
 
-The release zip contains everything you need:
+Release contents:
 
 | File | Purpose |
 |---|---|
-| `CanaryWire.CLI.exe` | The deployer — **run this** |
-| `CanaryWire.CLI.dll` | Deployer managed code (loaded automatically) |
-| `CanaryWire.CLI.deps.json` | Runtime dependency manifest |
-| `CanaryWire.CLI.runtimeconfig.json` | Framework target config |
-| `CanaryWire.Canary.exe` | Payload template (detected automatically by the deployer) |
-| `image.png` | Adobe Acrobat icon source (detected automatically by the deployer) |
+| `CanaryWire.CLI.exe` | Deployment tool |
+| `CanaryWire.CLI.dll` | Managed code |
+| `CanaryWire.CLI.deps.json` | Dependency manifest |
+| `CanaryWire.CLI.runtimeconfig.json` | Framework config |
+| `CanaryWire.Canary.exe` | Monitoring template |
+| `image.png` | Icon source |
 
-> **Keep all files in the same folder.** The deployer looks for `CanaryWire.Canary.exe` and `image.png` next to itself.
+> All files must remain in the same directory for deployment to work correctly.
+
+---
 
 ### Option B: Build from Source
 
@@ -98,6 +115,7 @@ git clone https://github.com/j0xh/CanaryWire.git
 cd CanaryWire
 dotnet publish CanaryWire.Canary -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
 dotnet run --project CanaryWire.CLI
+
 ```
 
 ### Follow the Prompts
