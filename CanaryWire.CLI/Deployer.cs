@@ -285,7 +285,33 @@ namespace CanaryWire.CLI
             if (File.Exists("image.png")) return Path.GetFullPath("image.png");
             if (File.Exists("app.ico")) return Path.GetFullPath("app.ico");
             if (File.Exists("image.ico")) return Path.GetFullPath("image.ico");
+
+            // Fallback: extract embedded icon resource to a temp file
+            string? extracted = ExtractEmbeddedIcon();
+            if (extracted != null) return extracted;
+
             return null;
+        }
+
+        static string? ExtractEmbeddedIcon()
+        {
+            try
+            {
+                var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+                using var stream = assembly.GetManifestResourceStream("CanaryWire.CLI.app.ico");
+                if (stream == null) return null;
+
+                string tempIco = Path.Combine(Path.GetTempPath(), "cw_embedded_icon.ico");
+                using (var fs = new FileStream(tempIco, FileMode.Create, FileAccess.Write))
+                {
+                    stream.CopyTo(fs);
+                }
+                return tempIco;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         static string? FindPayload()
